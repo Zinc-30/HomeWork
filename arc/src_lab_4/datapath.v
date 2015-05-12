@@ -14,8 +14,20 @@ module datapath (
 	`endif
 	// control signals
 	output reg [31:0] inst_data_ctrl,  // instruction
-	input wire rs_used_ctrl,  // whether RS is used
-	input wire rt_used_ctrl,  // whether RT is used
+    output reg rs_rt_equal,
+    output reg is_load_exe,
+    output reg is_store_exe,
+    output reg [4:0] regw_addr_exe,
+    output reg wb_wen_exe,
+    output reg is_load_mem,
+    output reg is_store_mem,
+    output reg [4:0] addr_rt_mem,
+    output reg [4:0] regw_addr_mem,
+    output reg wb_wen_mem,
+    output reg [4:0] regw_addr_wb,
+    output reg wb_wen_wb,
+
+    input wire [1:0] pc_src_ctrl,
 	input wire imm_ext_ctrl,  // whether using sign extended to immediate data
 	input wire exe_b_src_ctrl,  // data source of operand B for ALU
 	input wire [3:0] exe_alu_oper_ctrl,  // ALU operation type
@@ -106,8 +118,9 @@ module datapath (
 	reg fwd_m_mem;//forwarding
 	
 	// WB signals
-	reg [4:0] regw_addr_wb;
 	reg [31:0] regw_data_wb;
+    reg [4:0] regw_addr_final;
+    reg [31:0] regw_data_final;
 	
 	// debug
 	`ifdef DEBUG
@@ -163,8 +176,8 @@ module datapath (
 			inst_ren <= 1;
 			case (pc_src_ctrl)
 				PC_NEXT: inst_addr <= inst_addr_next;
-				PC_JUMP: inst_addr <= inst_addr_next_id[31:28],inst_data_id[25:0], 2'b0};
-				PC_BRANCH: inst_addr <= inst_addr_next_id+{data_imm[29:0],2'b0};
+				PC_JUMP: inst_addr <= {inst_addr_id[31:28],inst_data_id[25:0], 2'b0};
+				PC_BRANCH: inst_addr <= inst_addr_next_id + {data_imm[29:0] , 2'b0};
 			endcase
 		end
 	end
@@ -366,13 +379,24 @@ module datapath (
 		mem_ren = mem_ren_mem,
 		mem_wen = mem_wen_mem,
 		mem_addr = alu_out_mem,
-		mem_dout = fwd_m_mem?regw_data_wb:data_rt_mem;//forwarding
+        mem_dout = fwd_m_mem ? regw_data_wb : data_rt_mem;//forwarding
 
 // WB stage		
-	always @(*) begin
-		wb_valid = wb_en;
-		wb_wen_wb = wb_wen_mem & wb_en;
-		regw_addr_wb = regw_addr_mem;
-		regw_data_wb = regw_data_mem;
-	end
+    always @(posedge clk) begin
+        if (wb_rst) begin
+            wb_valid <= 0;
+            wb_wen_wb <= 0;
+            regw_addr_wb <= 0;
+            regw_data_wb <= 0;
+        end
+        else if (wb_en) begin
+            wb_valid <= mem_valid;
+            wb_wen_wb <= wb_wen_men;
+            regw_addr_wb <= regw_addr_mem;
+            regw_data_wb <= regw_data_mem;
+        end
+    end
+
+
+
 endmodule
