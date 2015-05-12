@@ -161,7 +161,11 @@ module datapath (
 		else if (if_en) begin
 			if_valid <= 1;
 			inst_ren <= 1;
-			inst_addr <= is_branch_mem ? alu_out_mem : inst_addr_next;
+			case (pc_src_ctrl)
+				PC_NEXT: inst_addr <= inst_addr_next;
+				PC_JUMP: inst_addr <= inst_addr_next_id[31:28],inst_data_id[25:0], 2'b0};
+				PC_BRANCH: inst_addr <= inst_addr_next_id+{data_imm[29:0],2'b0};
+			endcase
 		end
 	end
 	
