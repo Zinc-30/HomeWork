@@ -38,8 +38,8 @@ module controller (/*AUTOARG*/
 	output reg wb_wen,  // register write enable signal
 	output reg [1:0] pc_src, // how would Pc change to next
 	//output reg is_branch,  // whether current instruction is a branch instruction
-	output reg rs_used,  // whether RS is used
-	output reg rt_used,  // whether RT is used
+	//output reg rs_used,  // whether RS is used
+	//output reg rt_used,  // whether RT is used
 	output reg is_load, // whether current is lw
 	output reg is_store, // whether current is sw
 	output reg unrecognized,  // whether current instruction can not be recognized
@@ -47,11 +47,8 @@ module controller (/*AUTOARG*/
 	output reg [1:0] fwd_a,//forwarding selection for a
 	output reg [1:0] fwd_b,//selection for b
 	output reg fwd_m,//selection for memory
-
-
-
 	// pipeline control
-	input wire reg_stall,  // stall signal when LW instruction followed by an related R instruction
+//	input wire reg_stall,  // stall signal when LW instruction followed by an related R instruction
 	output reg if_rst,  // stage reset signal
 	output reg if_en,  // stage enable signal
 	
@@ -75,7 +72,7 @@ module controller (/*AUTOARG*/
 	);
 	
 	`include "mips_define.vh"
-	
+	reg rs_used,rt_used;
 	// instruction decode
 	always @(*) begin
 		imm_ext = 0;
@@ -160,6 +157,7 @@ module controller (/*AUTOARG*/
 				wb_data_src = WB_DATA_MEM;
 				wb_wen = 1;
 				rs_used = 1;
+				is_load = 1;
 			end
 			INST_SW: begin
 				imm_ext = 1;
@@ -168,6 +166,7 @@ module controller (/*AUTOARG*/
 				mem_wen = 1;
 				rs_used = 1;
 				rt_used = 1;
+				is_store = 1;
 			end
 			default: begin
 				unrecognized = 1;
@@ -187,15 +186,48 @@ module controller (/*AUTOARG*/
 	assign
         addr_rs = inst_data_ctrl[25:21],
         addr_rt = inst_data_ctrl[20:16];
+
 	always @(*) begin
 		reg_stall = 0;
 		fwd_a = 0;
 		fwd_b = 0;
 		fwd_m = 0;
+		//a
 		if (rs_used && addr_rs!=0) begin
-			
+			if (regw_addr_exe == addr_rs && wb_wen_exe) begin
+				if (is_load_exe) 
+					reg_stall = 1;
+					else begin
+						fwd_a = 1;
+					end
+			end
+			else if (regw_addr_mem == addr_rs && wb_wen_mem) begin
+				if (is_load_mem)
+					fwd_a =3;
+				else begin
+					fwd_a =2;			
+				end
+			end
+		end
+		//b
+		if (rt_used && addr_rt!=0) begin
+			if (regw_addr_exe == addr_rt && wb_wen_exe) begin
+				if (is_load_exe) 
+					reg_stall = 1;
+					else begin
+						fwd_b = 1;
+					end
+			end
+			else if (regw_addr_mem == addr_rt && wb_wen_mem) begin
+				if (is_load_mem)
+					fwd_b =3;
+				else begin
+					fwd_b =2;			
+				end
+			end
 		end
 	end
+	
 	always @(*) begin
 		if_rst = 0;
 		if_en = 1;
