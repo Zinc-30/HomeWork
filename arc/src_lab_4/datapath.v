@@ -36,7 +36,6 @@ module datapath (
 	input wire wb_addr_src_ctrl,  // address source to write data back to registers
 	input wire wb_data_src_ctrl,  // data source of data being written back to registers
 	input wire wb_wen_ctrl,  // register write enable signal
-	input wire is_branch_ctrl,  // whether current instruction is a jump instruction
 	
 	// IF signals
 	input wire if_rst,  // stage reset signal
@@ -49,7 +48,6 @@ module datapath (
 	input wire id_rst,
 	input wire id_en,
 	output reg id_valid,
-	output reg reg_stall,  // stall signal when LW instruction followed by an related R instruction
 	// EXE signals
 	input wire exe_rst,
 	input wire exe_en,

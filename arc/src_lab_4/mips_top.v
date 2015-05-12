@@ -164,11 +164,6 @@ module mips_top (
 		.inst(inst_data)
 		);
 
-//    inst_rom INST_ROM (
-//        .clka(clk_cpu),
-//        .addra({2'b0, inst_addr[31:2]}),
-//        .douta(inst_data)
-//    );
 	// IF YOU ARE NOT SURE ABOUT INITIALIZING MEMORY USING 'READMEMH', PLEASE REPLACE BELOW MODULE TO IP CORE
 	data_ram DATA_RAM (
 		.clk(clk_cpu),
@@ -179,12 +174,6 @@ module mips_top (
 		.din(mem_data_w),
 		.dout(mem_data_r)
 		);
-//	data_ram DATA_RAM (
-//		.clka(clk_cpu),
-//        .addra({2'b0, mem_addr[31:2]}),
-//        .wea(mem_wen),
-//        .dina(mem_data_w),
-//        .douta(mem_data_r)
-//	);
+
 	
 endmodule
