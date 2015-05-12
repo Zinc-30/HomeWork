@@ -70,6 +70,8 @@ module controller (/*AUTOARG*/
 	
 	input wire wb_valid
 	);
+
+    reg reg_stall;
 	
 	`include "mips_define.vh"
 	reg rs_used,rt_used;
@@ -87,9 +89,6 @@ module controller (/*AUTOARG*/
 		rs_used = 0;
 		rt_used = 0;
 		unrecognized = 0;
-		exe_fwca_exe = 0;//forwarding
-		exe_fwcb_exe = 0;
-		mem_fwdm_mem = 0;
 		case (inst[31:26])
 			INST_R: begin
 				case (inst[5:0])
@@ -184,8 +183,8 @@ module controller (/*AUTOARG*/
 	`endif
 
 	assign
-        addr_rs = inst_data_ctrl[25:21],
-        addr_rt = inst_data_ctrl[20:16];
+        addr_rs = inst[25:21],
+        addr_rt = inst[20:16];
 
 	always @(*) begin
 		reg_stall = 0;
