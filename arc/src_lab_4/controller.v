@@ -51,27 +51,27 @@ module controller (/*AUTOARG*/
 //	input wire reg_stall,  // stall signal when LW instruction followed by an related R instruction
 	output reg if_rst,  // stage reset signal
 	output reg if_en,  // stage enable signal
-	
 	input wire if_valid,  // stage valid flag
+
 	output reg id_rst,
 	output reg id_en,
-	
 	input wire id_valid,
+
 	output reg exe_rst,
 	output reg exe_en,
-	
 	input wire exe_valid,
+
 	output reg mem_rst,
 	output reg mem_en,
-	
 	input wire mem_valid,
+
 	output reg wb_rst,
 	output reg wb_en,
-	
 	input wire wb_valid
 	);
 
     reg reg_stall;
+    wire [4:0] addr_rs, addr_rt;
 	
 	`include "mips_define.vh"
 	reg rs_used,rt_used;
@@ -88,6 +88,8 @@ module controller (/*AUTOARG*/
 		pc_src = 2'b00;
 		rs_used = 0;
 		rt_used = 0;
+        is_load = 0;
+        is_store = 0;
 		unrecognized = 0;
 		case (inst[31:26])
 			INST_R: begin
@@ -194,15 +196,17 @@ module controller (/*AUTOARG*/
 		//a
 		if (rs_used && addr_rs!=0) begin
 			if (regw_addr_exe == addr_rs && wb_wen_exe) begin
-				if (is_load_exe) 
+                if (is_load_exe) begin
 					reg_stall = 1;
-					else begin
-						fwd_a = 1;
-					end
+                end 
+				else begin
+					fwd_a = 1;
+				end
 			end
 			else if (regw_addr_mem == addr_rs && wb_wen_mem) begin
-				if (is_load_mem)
+                if (is_load_mem) begin
 					fwd_a =3;
+                end
 				else begin
 					fwd_a =2;			
 				end

@@ -40,7 +40,7 @@ module datapath (
     input wire [1:0] fwd_b_ctrl,
     input wire fwd_m_ctrl,
     input wire is_load_ctrl,
-    input  wire is_store_ctrl,
+    input wire is_store_ctrl,
 	
 	// IF signals
 	input wire if_rst,  // stage reset signal
@@ -53,7 +53,6 @@ module datapath (
 	input wire id_rst,
 	input wire id_en,
 	output reg id_valid,
-	output reg reg_stall,  // stall signal when LW instruction followed by an related R instruction
 	// EXE signals
 	input wire exe_rst,
 	input wire exe_en,
@@ -80,7 +79,6 @@ module datapath (
 	reg mem_ren_exe, mem_ren_mem;
 	reg mem_wen_exe, mem_wen_mem;
 	reg wb_data_src_exe, wb_data_src_mem;
-	reg is_branch_exe, is_branch_mem;
 	
 	
 	// IF signals
@@ -90,7 +88,6 @@ module datapath (
 	reg [31:0] inst_addr_id;
 	reg [31:0] inst_addr_next_id;
 	reg [4:0] regw_addr_id;
-	reg [31:0] opa_id, opb_id;
 	wire [4:0] addr_rs, addr_rt;
 	wire [31:0] data_rs, data_rt, data_imm;
 	reg AFromEXLW,BFromEXLW;	
@@ -105,13 +102,12 @@ module datapath (
     reg [31:0] data_rs_fwd, data_rt_fwd;
     reg [4:0] addr_rs_exe, addr_rt_exe;
     reg [31:0] data_rs_exe, data_imm_exe;
-    reg [31:0] opa_exe, opb_exe;
-    reg [1:0] exe_b_src_exe;
+    reg exe_b_src_exe;
 	
 	// MEM signals
 	reg [31:0] inst_addr_mem;
 	reg [31:0] inst_data_mem;
-	reg [31:0] opa_mem, data_rt_mem;
+	reg [31:0] data_rt_mem;
 	reg [31:0] alu_out_mem;
 	reg [31:0] regw_data_mem;
 	
@@ -286,9 +282,8 @@ module datapath (
 		end
 	end
 
-	assign
-		alu_a_exe = is_branch_exe ? inst_addr_next_exe : opa_exe,
-		alu_b_exe = is_branch_exe ? {opb_exe[29:0], 2'b0} : opb_exe;
+	assign alu_a_exe = data_rs_exe;
+    assign alu_b_exe = exe_b_src_exe ? data_imm_exe : data_rt_exe;
 		
 	alu ALU (
 		.inst(inst_data_exe),
@@ -305,28 +300,28 @@ module datapath (
 			inst_addr_mem <= 0;
 			inst_data_mem <= 0;
 			regw_addr_mem <= 0;
-			opa_mem <= 0;
 			data_rt_mem <= 0;
 			alu_out_mem <= 0;
 			mem_ren_mem <= 0;
 			mem_wen_mem <= 0;
 			wb_data_src_mem <= 0;
 			wb_wen_mem <= 0;
-			is_branch_mem <= 0;
+            is_load_mem <= 0;
+            is_store_mem <= 0;
 		end
 		else if (mem_en) begin
 			mem_valid <= exe_valid;
 			inst_addr_mem <= inst_addr_exe;
 			inst_data_mem <= inst_data_exe;
 			regw_addr_mem <= regw_addr_exe;
-			opa_mem <= opa_exe;
 			data_rt_mem <= data_rt_exe;
 			alu_out_mem <= alu_out_exe;
 			mem_ren_mem <= mem_ren_exe;
 			mem_wen_mem <= mem_wen_exe;
 			wb_data_src_mem = wb_data_src_exe;
 			wb_wen_mem <= wb_wen_exe;
-			is_branch_mem <= is_branch_exe;
+            is_load_mem <= is_load_exe;
+            is_store_mem <= is_store_exe;
 		end
 	end
 
