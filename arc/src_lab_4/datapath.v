@@ -36,8 +36,8 @@ module datapath (
 	input wire wb_addr_src_ctrl,  // address source to write data back to registers
 	input wire wb_data_src_ctrl,  // data source of data being written back to registers
 	input wire wb_wen_ctrl,  // register write enable signal
-    input wire [1:0] fwd_a_ctrl,
-    input wire [1:0] fwd_b_ctrl,
+    input wire [2:0] fwd_a_ctrl,
+    input wire [2:0] fwd_b_ctrl,
     input wire fwd_m_ctrl,
     input wire is_load_ctrl,
     input wire is_store_ctrl,
@@ -230,12 +230,14 @@ module datapath (
             1: data_rs_fwd = alu_out_exe;
             2: data_rs_fwd = alu_out_mem;
             3: data_rs_fwd = mem_din;
+            4: data_rs_fwd = regw_data_wb;
 		endcase
         case (fwd_b_ctrl)
             0: data_rt_fwd = data_rt;
             1: data_rt_fwd = alu_out_exe;
             2: data_rt_fwd = alu_out_mem;
             3: data_rt_fwd = mem_din;
+            4: data_rt_fwd = regw_data_wb;
         endcase
         rs_rt_equal = (data_rs_fwd == data_rt_fwd);
 	end

@@ -44,8 +44,8 @@ module controller (/*AUTOARG*/
 	output reg is_store, // whether current is sw
 	output reg unrecognized,  // whether current instruction can not be recognized
 	
-	output reg [1:0] fwd_a,//forwarding selection for a
-	output reg [1:0] fwd_b,//selection for b
+	output reg [2:0] fwd_a,//forwarding selection for a
+	output reg [2:0] fwd_b,//selection for b
 	output reg fwd_m,//selection for memory
 	// pipeline control
 //	input wire reg_stall,  // stall signal when LW instruction followed by an related R instruction
@@ -211,15 +211,19 @@ module controller (/*AUTOARG*/
 					fwd_a =2;			
 				end
 			end
+            else if (regw_addr_wb == addr_rs && wb_wen_wb) begin
+                fwd_a = 4;
+            end
 		end
 		//b
 		if (rt_used && addr_rt!=0) begin
 			if (regw_addr_exe == addr_rt && wb_wen_exe) begin
-				if (is_load_exe) 
+                if (is_load_exe) begin
 					reg_stall = 1;
-					else begin
-						fwd_b = 1;
-					end
+                end
+				else begin
+					fwd_b = 1;
+				end
 			end
 			else if (regw_addr_mem == addr_rt && wb_wen_mem) begin
 				if (is_load_mem)
@@ -228,6 +232,9 @@ module controller (/*AUTOARG*/
 					fwd_b =2;			
 				end
 			end
+            else if (regw_addr_wb == addr_rt && wb_wen_wb) begin
+                fwd_b = 4;
+            end
 		end
 	end
 	

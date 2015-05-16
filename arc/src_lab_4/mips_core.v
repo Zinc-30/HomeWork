@@ -47,7 +47,7 @@ module mips_core (
 	wire mem_rst, mem_en, mem_valid;
 	wire wb_rst, wb_en, wb_valid;
 
-    wire [1:0] fwd_a, fwd_b;
+    wire [2:0] fwd_a, fwd_b;
     wire fwd_m;
     wire is_load_ctrl, is_load_exe, is_load_exe;
     wire is_store_ctrl, is_store_exe, is_store_mem;
