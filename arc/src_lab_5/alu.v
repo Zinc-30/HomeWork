@@ -13,33 +13,24 @@ module alu (
 	);
 	
 	`include "mips_define.vh"
-	
-	/*reg adder_mode;
-	wire [31:0] adder_result;
-	
-	adder ADDER (
-		.a(a),
-		.b(b),
-		.mode(adder_mode),
-		.result(adder_result)
-		);*/
-	
+
+	wire [4:0] sa;
+	assign sa = inst[10:6]; 
+
 	always @(*) begin
 		//adder_mode = 0;
 		result = 0;
 		case (oper)
-			/*EXE_ALU_ADD: begin
-				adder_mode = 0;
-				result = adder_result;
-			end
-			EXE_ALU_SUB: begin
-				adder_mode = 1;
-				result = adder_result;
-			end*/
 			EXE_ALU_ADD: begin
 				result = a + b;
 			end
+			EXE_ALU_ADDU: begin
+				result = a + b;
+			end
 			EXE_ALU_SUB: begin
+				result = a - b;
+			end
+			EXE_ALU_SUBU: begin
 				result = a - b;
 			end
 			EXE_ALU_AND: begin
@@ -50,6 +41,36 @@ module alu (
 			end
 			EXE_ALU_XOR: begin
 				result = a ^ b;
+			end
+			EXE_ALU_NOR: begin
+				result = ~(a | b);
+			end
+			EXE_ALU_SLT: begin
+				result = $signed(a) < $signed(b) ? 1 : 0;
+			end
+			EXE_ALU_SLTU: begin
+				result = $unsigned(a) < $unsigned(b) ? 1 : 0;
+			end
+			EXE_ALU_SLL: begin
+				result = $unsigned(b) << sa;				
+			end
+			EXE_ALU_SRL: begin
+				result = $unsigned(b) >> sa;
+			end
+			EXE_ALU_SRA: begin
+				result = $signed(b) >> sa;
+			end
+			EXE_ALU_SLLV: begin
+				result = $unsigned(b) << a;
+			end
+			EXE_ALU_SRLV: begin
+				result = $unsigned(b) >> a;
+			end
+			EXE_ALU_SRAV: begin
+				result = $signed(b) >> a;
+			end
+			EXE_ALU_LUI: begin
+				result = {b[15:0], 16'b0};
 			end
 		endcase
 	end
