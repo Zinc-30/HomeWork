@@ -34,7 +34,7 @@ module controller (/*AUTOARG*/
 	output reg [4:0] exe_alu_oper,  // ALU operation type
 	output reg mem_ren,  // memory read enable signal
 	output reg mem_wen,  // memory write enable signal
-	output reg wb_addr_src,  // address source to write data back to registers
+	output reg [1:0] wb_addr_src,  // address source to write data back to registers
 	output reg wb_data_src,  // data source of data being written back to registers
 	output reg wb_wen,  // register write enable signal
 	output reg [1:0] pc_src, // how would Pc change to next
