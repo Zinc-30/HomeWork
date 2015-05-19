@@ -31,7 +31,7 @@ module controller (/*AUTOARG*/
 	output reg imm_ext,  // whether using sign extended to immediate data
 	output reg [1:0] exe_b_src,  // data source of operand B for ALU
 	output reg exe_a_src,
-	output reg [3:0] exe_alu_oper,  // ALU operation type
+	output reg [4:0] exe_alu_oper,  // ALU operation type
 	output reg mem_ren,  // memory read enable signal
 	output reg mem_wen,  // memory write enable signal
 	output reg wb_addr_src,  // address source to write data back to registers
@@ -212,8 +212,8 @@ module controller (/*AUTOARG*/
 						rs_used = 1;
 						rt_used = 1;
 					end
-					R_FUNC_SLAV: begin
-						exe_alu_oper = EXE_ALU_SLAV;
+					R_FUNC_SRAV: begin
+						exe_alu_oper = EXE_ALU_SRAV;
 						wb_addr_src = WB_ADDR_RD;
 						wb_data_src = WB_DATA_ALU;
 						wb_wen = 1;
@@ -279,16 +279,16 @@ module controller (/*AUTOARG*/
 				wb_wen = 1;
 			end
 
-			INST_STLI:begin
-				exe_alu_oper = EXE_ALU_STL;
+			INST_SLTI:begin
+				exe_alu_oper = EXE_ALU_SLT;
 				exe_b_src = EXE_B_IMM;
 				imm_ext = 1;
 				wb_addr_src = WB_ADDR_RT;
 				wb_data_src = WB_DATA_ALU;
 				wb_wen = 1;
 			end
-			INST_STLIU:begin
-				exe_alu_oper = EXE_ALU_STL;
+			INST_SLTIU:begin
+				exe_alu_oper = EXE_ALU_SLT;
 				exe_b_src = EXE_B_IMM;
 				wb_addr_src = WB_ADDR_RT;
 				wb_data_src = WB_DATA_ALU;
@@ -314,7 +314,7 @@ module controller (/*AUTOARG*/
 			end
 			INST_JAL: begin
 				pc_src = PC_JUMP;
-				WB_ADDR_RT = WB_ADDR_LINK;
+				wb_addr_src = WB_ADDR_LINK;
 				wb_data_src = WB_DATA_ALU;
 				exe_b_src = EXE_B_LINK;
 				exe_a_src = EXE_A_PC;

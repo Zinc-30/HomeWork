@@ -8,7 +8,7 @@
 module alu (
 	input wire [31:0] inst,  // instruction
 	input wire [31:0] a, b,  // two operands
-	input wire [3:0] oper,  // operation type
+	input wire [4:0] oper,  // operation type
 	output reg [31:0] result  // calculation result
 	);
 	

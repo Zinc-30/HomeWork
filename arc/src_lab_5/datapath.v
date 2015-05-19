@@ -29,8 +29,9 @@ module datapath (
 
     input wire [1:0] pc_src_ctrl,
 	input wire imm_ext_ctrl,  // whether using sign extended to immediate data
+	input wire exe_a_src_ctrl,
 	input wire exe_b_src_ctrl,  // data source of operand B for ALU
-	input wire [3:0] exe_alu_oper_ctrl,  // ALU operation type
+	input wire [4:0] exe_alu_oper_ctrl,  // ALU operation type
 	input wire mem_ren_ctrl,  // memory read enable signal
 	input wire mem_wen_ctrl,  // memory write enable signal
 	input wire wb_addr_src_ctrl,  // address source to write data back to registers
@@ -75,7 +76,7 @@ module datapath (
 	`include "mips_define.vh"
 	
 	// control signals
-	reg [3:0] exe_alu_oper_exe;
+	reg [4:0] exe_alu_oper_exe;
 	reg mem_ren_exe, mem_ren_mem;
 	reg mem_wen_exe, mem_wen_mem;
 	reg wb_data_src_exe, wb_data_src_mem;

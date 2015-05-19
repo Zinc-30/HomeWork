@@ -33,7 +33,7 @@ module mips_core (
 	wire imm_ext_ctrl;
 	wire [1:0] exe_b_src_ctrl;
 	wire exe_a_src_ctrl;
-	wire [3:0] exe_alu_oper_ctrl;
+	wire [4:0] exe_alu_oper_ctrl;
 	wire mem_ren_ctrl;
 	wire mem_wen_ctrl;
 	wire wb_addr_src_ctrl;

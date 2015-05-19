@@ -1,7 +1,7 @@
 // EXE B sources
 localparam
 	EXE_B_RT   = 0,
-	EXE_B_IMM  = 1;
+	EXE_B_IMM  = 1,
 	EXE_B_LINK = 2;
 
 // EXE A sources
@@ -12,7 +12,7 @@ localparam
 localparam
 	PC_NEXT = 0,
 	PC_BRANCH = 2,
-	PC_JUMP = 1;
+	PC_JUMP = 1,
 	PC_JR = 3;
 
 // EXE ALU operations
@@ -23,28 +23,30 @@ localparam
 	EXE_ALU_LUI    = 3,
 	EXE_ALU_AND    = 4,
 	EXE_ALU_OR     = 5,
-	EXE_ALU_XOR    = 6;
+	EXE_ALU_XOR    = 6,
 	EXE_ALU_NOR    = 7,
 	EXE_ALU_SLL    = 8,
 	EXE_ALU_SRL    = 9,  // including ROTR(set bit 21) and SRA(set sign)
 	EXE_ALU_ROTR   = 10,
 	EXE_ALU_SRA    = 11,
 	EXE_ALU_SLLV   = 12,
-	EXE_ALU_SRLV   = 13;  // including ROTRV(set bit 6) and SRAV(set sign)
+	EXE_ALU_SRLV   = 13,  // including ROTRV(set bit 6) and SRAV(set sign)
 	EXE_ALU_ROTRV  = 14,
-	EXE_ALU_SRAV   = 15;
-	EXE_ALU_SLTU   = 16;
+	EXE_ALU_SRAV   = 15,
+	EXE_ALU_SLTU   = 16,
+	EXE_ALU_ADDU 	= 17,
+	EXE_ALU_SUBU	= 18;
 
 // WB address sources
 localparam
 	WB_ADDR_RD    = 0,
-	WB_ADDR_RT    = 1;
+	WB_ADDR_RT    = 1,
 	WB_ADDR_LINK  = 2;
 
 // WB data sources
 localparam
 	WB_DATA_ALU   = 0,
-	WB_DATA_MEM   = 1;
+	WB_DATA_MEM   = 1,
 	WB_DATA_LINK  = 2,
 	WB_DATA_REGA  = 3;
 
