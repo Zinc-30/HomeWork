@@ -204,6 +204,7 @@ module datapath (
 		case (wb_addr_src_ctrl)
 			WB_ADDR_RD: regw_addr_id = inst_data_ctrl[15:11];
 			WB_ADDR_RT: regw_addr_id = inst_data_ctrl[20:16];
+			WB_ADDR_LINK: regw_addr_id = 5'd31;
 		endcase
 	end
 	

@@ -7,6 +7,7 @@ localparam
 	PC_NEXT = 0,
 	PC_BRANCH = 2,
 	PC_JUMP = 1;
+	PC_JR = 3;
 
 // EXE ALU operations
 localparam
