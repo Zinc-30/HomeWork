@@ -2,11 +2,18 @@
 localparam
 	EXE_B_RT   = 0,
 	EXE_B_IMM  = 1;
+	EXE_B_LINK = 2;
+
+// EXE A sources
+localparam
+	EXE_A_RS   = 0,
+	EXE_A_PC  = 1;
 
 localparam
 	PC_NEXT = 0,
 	PC_BRANCH = 2,
 	PC_JUMP = 1;
+	PC_JR = 3;
 
 // EXE ALU operations
 localparam

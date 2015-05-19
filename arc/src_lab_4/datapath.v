@@ -29,7 +29,8 @@ module datapath (
 
     input wire [1:0] pc_src_ctrl,
 	input wire imm_ext_ctrl,  // whether using sign extended to immediate data
-	input wire exe_b_src_ctrl,  // data source of operand B for ALU
+	input wire exe_a_src_ctrl,
+	input wire [1:0] exe_b_src_ctrl,  // data source of operand B for ALU
 	input wire [3:0] exe_alu_oper_ctrl,  // ALU operation type
 	input wire mem_ren_ctrl,  // memory read enable signal
 	input wire mem_wen_ctrl,  // memory write enable signal
@@ -173,6 +174,7 @@ module datapath (
 				PC_NEXT: inst_addr <= inst_addr_next;
 				PC_JUMP: inst_addr <= {inst_addr_id[31:28],inst_data_ctrl[25:0], 2'b0};
 				PC_BRANCH: inst_addr <= inst_addr_next_id + {data_imm[29:0] , 2'b0};
+				PC_JR:inst_addr <= data_rs_fwd;
 			endcase
 		end
 	end
@@ -204,6 +206,7 @@ module datapath (
 		case (wb_addr_src_ctrl)
 			WB_ADDR_RD: regw_addr_id = inst_data_ctrl[15:11];
 			WB_ADDR_RT: regw_addr_id = inst_data_ctrl[20:16];
+			WB_ADDR_LINK: regw_addr_id = 5'd31;
 		endcase
 	end
 	
@@ -284,8 +287,8 @@ module datapath (
 		end
 	end
 
-	assign alu_a_exe = data_rs_exe;
-    assign alu_b_exe = exe_b_src_exe ? data_imm_exe : data_rt_exe;
+	assign alu_a_exe = exe_a_src_exe ? inst_addr_next_exe:data_rs_exe;
+    assign alu_b_exe = exe_b_src_exe[1] ? 4:(exe_b_src_exe[0] ? data_imm_exe : data_rt_exe);
 		
 	alu ALU (
 		.inst(inst_data_exe),
