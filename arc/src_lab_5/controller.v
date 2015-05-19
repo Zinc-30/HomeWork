@@ -29,7 +29,8 @@ module controller (/*AUTOARG*/
 	input wire wb_wen_wb, // register write enable signal feedback from WB stage
 
 	output reg imm_ext,  // whether using sign extended to immediate data
-	output reg exe_b_src,  // data source of operand B for ALU
+	output reg [1:0] exe_b_src,  // data source of operand B for ALU
+	output reg exe_a_src,
 	output reg [3:0] exe_alu_oper,  // ALU operation type
 	output reg mem_ren,  // memory read enable signal
 	output reg mem_wen,  // memory write enable signal
@@ -79,6 +80,7 @@ module controller (/*AUTOARG*/
 	always @(*) begin
 		imm_ext = 0;
 		exe_b_src = EXE_B_RT;
+		exe_a_src = EXE_A_RS;
 		exe_alu_oper = EXE_ALU_ADD;
 		mem_ren = 0;
 		mem_wen = 0;
@@ -314,6 +316,8 @@ module controller (/*AUTOARG*/
 				pc_src = PC_JUMP;
 				WB_ADDR_RT = WB_ADDR_LINK;
 				wb_data_src = WB_DATA_ALU;
+				exe_b_src = EXE_B_LINK;
+				exe_a_src = EXE_A_PC;
 				wb_wen = 1;
 			end
 			INST_LW: begin
