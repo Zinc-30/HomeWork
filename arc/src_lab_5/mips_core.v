@@ -50,7 +50,7 @@ module mips_core (
 
     wire [2:0] fwd_a, fwd_b;
     wire fwd_m;
-    wire is_load_ctrl, is_load_exe, is_load_exe;
+    wire is_load_ctrl, is_load_exe;
     wire is_store_ctrl, is_store_exe, is_store_mem;
     wire rs_rt_equal;
     wire wb_wen_exe, wb_wen_mem, wb_wen_wb;

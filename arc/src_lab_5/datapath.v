@@ -290,7 +290,7 @@ module datapath (
 			mem_wen_exe <= mem_wen_ctrl;
 			wb_data_src_exe <= wb_data_src_ctrl;
 			wb_wen_exe <= wb_wen_ctrl;
-            is_load_exe = is_load_ctrl;
+            is_load_exe <= is_load_ctrl;
             is_store_exe <= is_store_ctrl;
 		end
 	end
