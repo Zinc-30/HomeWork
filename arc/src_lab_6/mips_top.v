@@ -174,6 +174,5 @@ module mips_top (
 		.din(mem_data_w),
 		.dout(mem_data_r)
 		);
-
 	
 endmodule

@@ -72,6 +72,12 @@ module alu (
 			EXE_ALU_LUI: begin
 				result = {b[15:0], 16'b0};
 			end
+            EXE_ALU_A: begin
+                result = a;
+            end
+            EXE_ALU_B: begin
+                result = b;
+            end
 		endcase
 	end
 	

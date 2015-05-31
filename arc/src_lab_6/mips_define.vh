@@ -35,7 +35,28 @@ localparam
 	EXE_ALU_SRAV   = 15,
 	EXE_ALU_SLTU   = 16,
 	EXE_ALU_ADDU 	= 17,
-	EXE_ALU_SUBU	= 18;
+	EXE_ALU_SUBU	= 18,
+    EXE_ALU_A       = 19,
+    EXE_ALU_B       = 20;
+
+// EXE CP operations
+localparam
+    EXE_CP_NONE = 0,
+    EXE_CP_STORE = 1,
+    EXE_CP0_ERET = 2;
+
+//CP0 registers
+localparam
+    //CP0_SR = 0,
+    //CP0_EAR = 1,
+    CP0_EPCR = 2,
+    CP0_EHBR = 3;
+    //CP0_IER = 4,
+    //CP0_ICR = 5,
+    //CP0_PDBR = 6,
+    //CP0_TIR = 7,
+    //CP0_WDR = 8;
+
 
 // WB address sources
 localparam
