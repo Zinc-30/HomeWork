@@ -65,6 +65,7 @@ always @(posedge clk) begin
     if (rst) begin
         jump_en <= 0;
         jump_addr <= 0;
+        eret <= 0;
     end
 	else if (ir) begin
         jump_en <= 1;
@@ -74,13 +75,17 @@ always @(posedge clk) begin
     else if (ir_en) begin
         case (oper) 
             EXE_CP_NONE: begin
+                jump_en <= 0;
+                eret <= 0;
             end
             EXE_CP_STORE: begin
+                eret <= 0;
                 regfile[addr_w] <= data_w;
             end
             EXE_CP0_ERET: begin
                 jump_en <= 1;
                 jump_addr <= regfile[CP0_EPCR];
+                eret <= 1;
             end
         endcase
     end

@@ -70,6 +70,7 @@ module controller (/*AUTOARG*/
 	output reg wb_en,
 	input wire wb_valid,
     // CP0 control signal
+    input wire jump_en,
     output reg [1:0] cp_oper
 	);
 
@@ -470,6 +471,10 @@ module controller (/*AUTOARG*/
 			id_en = 0;
 			exe_rst = 1;
 		end
+        // interrupt
+        else if (jump_en) begin
+            id_rst = 1;
+        end
 	end
 	
 endmodule

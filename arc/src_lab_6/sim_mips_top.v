@@ -7,10 +7,10 @@ module sim_mips_top;
 	// Inputs
 	reg CCLK;
 	reg [3:0] SW;
-	reg BTNN;// interrupt signal
+	reg BTNN;// reset signal 
 	reg BTNE;
-	reg BTNS;
-	reg BTNW;
+	reg BTNS;// step signal
+	reg BTNW;// interrupt signal
 	reg ROTA;
 	reg ROTB;
 	reg ROTCTR;
@@ -53,10 +53,9 @@ module sim_mips_top;
 		ROTCTR = 0;
 
 		// Wait 100 ns for global reset to finish
-//		#1 BTNN = 1;
-//		#1 BTNN = 0;
-        
 		// Add stimulus here
+        #1550 BTNW = 1;
+        #100 BTNW = 0;
 
 	end
 	
