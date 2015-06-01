@@ -68,7 +68,9 @@ module controller (/*AUTOARG*/
 
 	output reg wb_rst,
 	output reg wb_en,
-	input wire wb_valid
+	input wire wb_valid,
+    // CP0 control signal
+    output reg [1:0] cp_oper
 	);
 
     reg reg_stall;
@@ -93,6 +95,7 @@ module controller (/*AUTOARG*/
         is_load = 0;
         is_store = 0;
 		unrecognized = 0;
+        cp_oper = EXE_CP_NONE;
 		case (inst[31:26])
 			INST_R: begin
 				case (inst[5:0])
@@ -229,6 +232,27 @@ module controller (/*AUTOARG*/
 					end
 				endcase
 			end
+            INST_CP0: begin
+                if (inst[5:0] == CP0_CO_ERET) begin
+                    cp_oper = EXE_CP0_ERET;
+                end
+                else if(inst[25] == 0) begin
+                    case (inst[24:21])
+                        CP_FUNC_MF: begin
+                            rt_used = 1;
+                            cp_oper = EXE_CP_NONE;
+                            wb_addr_src = WB_ADDR_RT;
+                            wb_data_src = WB_DATA_ALU;
+                            wb_wen = 1;
+                            exe_alu_oper = EXE_ALU_B;
+                        end
+                        CP_FUNC_MT: begin
+                            rt_used = 1;
+                            cp_oper = EXE_CP_STORE;
+                        end
+                    endcase
+                end
+            end
 			INST_ADDI:begin
 				imm_ext = 1;
 				rs_used = 1;
@@ -371,19 +395,19 @@ module controller (/*AUTOARG*/
 					reg_stall = 1;
                 end 
 				else begin
-					fwd_a = 1;
+					fwd_a = FWD_A_FROM_EXE;
 				end
 			end
 			else if (regw_addr_mem == addr_rs && wb_wen_mem) begin
                 if (is_load_mem) begin
-					fwd_a =3;
+					fwd_a = FWD_A_FROM_DIN;
                 end
 				else begin
-					fwd_a =2;			
+					fwd_a = FWD_A_FROM_MEM;			
 				end
 			end
             else if (regw_addr_wb == addr_rs && wb_wen_wb) begin
-                fwd_a = 4;
+                fwd_a = FWD_A_FROM_WB;
             end
 		end
 		//b
@@ -393,19 +417,22 @@ module controller (/*AUTOARG*/
 					reg_stall = 1;
                 end
 				else begin
-					fwd_b = 1;
+					fwd_b = FWD_B_FROM_EXE;
 				end
 			end
 			else if (regw_addr_mem == addr_rt && wb_wen_mem) begin
 				if (is_load_mem)
-					fwd_b =3;
+					fwd_b = FWD_B_FROM_DIN;
 				else begin
-					fwd_b =2;			
+					fwd_b = FWD_B_FROM_MEM;			
 				end
 			end
             else if (regw_addr_wb == addr_rt && wb_wen_wb) begin
-                fwd_b = 4;
+                fwd_b = FWD_B_FROM_WB;
             end
+			else if (inst[24:21] == CP_FUNC_MF) begin
+				fwd_b = FWD_B_FROM_CP0;
+			end
 		end
 	end
 	

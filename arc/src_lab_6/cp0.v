@@ -27,6 +27,7 @@ module cp0 (
 wire ir;
 reg ir_wait = 0, ir_valid = 1;
 reg eret = 0;
+reg [31:0] regfile [0:31];
 
 always @(posedge clk) begin
     if (rst) begin
@@ -53,5 +54,43 @@ always @(posedge clk) begin
 end
 
 assign ir = ir_en & ir_wait & ir_valid;
+
+// CP0 operations(read at id stage)
+always @(negedge clk) begin
+    data_r <= regfile[addr_r];
+end
+    
+// CP0 operations(write at exe stage)
+always @(posedge clk) begin
+    if (rst) begin
+        jump_en <= 0;
+        jump_addr <= 0;
+    end
+	else if (ir) begin
+        jump_en <= 1;
+        jump_addr <= regfile[CP0_EHBR];
+        regfile[CP0_EPCR] <= ret_addr;
+    end
+    else if (ir_en) begin
+        case (oper) 
+            EXE_CP_NONE: begin
+            end
+            EXE_CP_STORE: begin
+                regfile[addr_w] <= data_w;
+            end
+            EXE_CP0_ERET: begin
+                jump_en <= 1;
+                jump_addr <= regfile[CP0_EPCR];
+            end
+        endcase
+    end
+end
+
+// debug
+`ifdef DEBUG
+always @(negedge clk) begin
+    debug_data <= regfile[debug_addr];
+end
+`endif
 
 endmodule

@@ -7,7 +7,7 @@ module sim_mips_top;
 	// Inputs
 	reg CCLK;
 	reg [3:0] SW;
-	reg BTNN;
+	reg BTNN;// interrupt signal
 	reg BTNE;
 	reg BTNS;
 	reg BTNW;

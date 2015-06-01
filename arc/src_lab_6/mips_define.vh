@@ -1,3 +1,17 @@
+// ID forward control
+localparam 
+    FWD_A_FROM_ID = 0,
+    FWD_A_FROM_EXE = 1,
+    FWD_A_FROM_MEM = 2,
+    FWD_A_FROM_DIN = 3,
+    FWD_A_FROM_WB = 4,
+    FWD_B_FROM_ID = 0,
+    FWD_B_FROM_EXE = 1,
+    FWD_B_FROM_MEM = 2,
+    FWD_B_FROM_DIN = 3,
+    FWD_B_FROM_WB = 4,
+    FWD_B_FROM_CP0 = 5;
+
 // EXE B sources
 localparam
 	EXE_B_RT   = 0,

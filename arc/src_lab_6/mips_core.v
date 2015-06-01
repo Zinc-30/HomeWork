@@ -55,6 +55,9 @@ module mips_core (
     wire rs_rt_equal;
     wire wb_wen_exe, wb_wen_mem, wb_wen_wb;
     wire [4:0] addr_rt_mem, regw_addr_exe, regw_addr_mem, regw_addr_wb;
+
+    wire [1:0] cp_oper;
+
 	
 	// controller
 	controller CONTROLLER (
@@ -115,7 +118,9 @@ module mips_core (
 
 		.wb_rst(wb_rst),
 		.wb_en(wb_en),
-		.wb_valid(wb_valid)
+		.wb_valid(wb_valid),
+
+        .cp_oper(cp_oper)
 	);
 	
 	// data path
@@ -182,7 +187,9 @@ module mips_core (
         // WB signals
 		.wb_rst(wb_rst),
 		.wb_en(wb_en),
-		.wb_valid(wb_valid)
+		.wb_valid(wb_valid),
+        // CP0 control signal
+        .cp_oper(cp_oper)
 	);
 	
 endmodule

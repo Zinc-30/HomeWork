@@ -73,7 +73,9 @@ module datapath (
 	// WB signals
 	input wire wb_rst,
 	input wire wb_en,
-	output reg wb_valid
+	output reg wb_valid,
+    // CP0 control signal
+    input wire [1:0] cp_oper
 	);
 	
 	`include "mips_define.vh"
@@ -121,6 +123,11 @@ module datapath (
     reg [4:0] regw_addr_final;
     reg [31:0] regw_data_final;
     reg wb_wen_final;
+
+    // cp0 signals
+    wire [31:0] epc, return_addr;
+    wire epc_ctrl;
+    wire [31:0] cpr_cs;
 	
 	// debug
 	`ifdef DEBUG
@@ -174,12 +181,17 @@ module datapath (
 		else if (if_en) begin
 			if_valid <= 1;
 			inst_ren <= 1;
-			case (pc_src_ctrl)
-				PC_NEXT: inst_addr <= inst_addr_next;
-				PC_JUMP: inst_addr <= {inst_addr_id[31:28],inst_data_ctrl[25:0], 2'b0};
-				PC_BRANCH: inst_addr <= inst_addr_next_id + {data_imm[29:0] , 2'b0};
-				PC_JR:inst_addr <= data_rs_fwd;
-			endcase
+            if (epc_ctrl == 0) begin
+                inst_addr <= epc;
+            end
+            else begin
+                case (pc_src_ctrl)
+                    PC_NEXT: inst_addr <= inst_addr_next;
+                    PC_JUMP: inst_addr <= {inst_addr_id[31:28],inst_data_ctrl[25:0], 2'b0};
+                    PC_BRANCH: inst_addr <= inst_addr_next_id + {data_imm[29:0] , 2'b0};
+                    PC_JR:inst_addr <= data_rs_fwd;
+                endcase
+            end
 		end
 	end
 	
@@ -213,6 +225,8 @@ module datapath (
 			WB_ADDR_LINK: regw_addr_id = 5'd31;
 		endcase
 	end
+
+    assign return_addr = (pc_src_ctrl == 0) ? inst_addr_id : inst_addr;
 	
 	regfile REGFILE (
 		.clk(clk),
@@ -228,23 +242,44 @@ module datapath (
 		.addr_w(regw_addr_wb),
 		.data_w(regw_data_wb)
 		);
-	
+
+	// CP0
+    cp0 CP0(
+        .clk(clk),
+        `ifdef debug
+        .debug_addr(), 
+        .debug_data(),
+        `endif
+        .oper(cp_oper),
+        .addr_r(inst_data_ctrl[15:11]),
+        .data_r(cpr_cs),
+        .addr_w(inst_data_ctrl[15:11]),
+        .data_w(data_rt_fwd),
+        .rst(rst),
+        .ir_en(id_en),
+        .ir_in(),
+        .ret_addr(return_addr),
+        .jump_en(epc_ctrl),
+        .jump_addr(epc)
+    );
+
 	always @(*) begin 
 		data_rs_fwd = data_rs;
 		data_rt_fwd = data_rt;
 		case (fwd_a_ctrl)
-            0: data_rs_fwd = data_rs;
-            1: data_rs_fwd = alu_out_exe;
-            2: data_rs_fwd = alu_out_mem;
-            3: data_rs_fwd = mem_din;
-            4: data_rs_fwd = regw_data_wb;
+            FWD_A_FROM_ID: data_rs_fwd = data_rs;
+            FWD_A_FROM_EXE: data_rs_fwd = alu_out_exe;
+            FWD_A_FROM_MEM: data_rs_fwd = alu_out_mem;
+            FWD_A_FROM_DIN: data_rs_fwd = mem_din;
+            FWD_A_FROM_WB: data_rs_fwd = regw_data_wb;
 		endcase
         case (fwd_b_ctrl)
-            0: data_rt_fwd = data_rt;
-            1: data_rt_fwd = alu_out_exe;
-            2: data_rt_fwd = alu_out_mem;
-            3: data_rt_fwd = mem_din;
-            4: data_rt_fwd = regw_data_wb;
+            FWD_B_FROM_ID: data_rt_fwd = data_rt;
+            FWD_B_FROM_EXE: data_rt_fwd = alu_out_exe;
+            FWD_B_FROM_MEM: data_rt_fwd = alu_out_mem;
+            FWD_B_FROM_DIN: data_rt_fwd = mem_din;
+            FWD_B_FROM_WB: data_rt_fwd = regw_data_wb;
+            FWD_B_FROM_CP0: data_rt_fwd = cpr_cs;
         endcase
         rs_rt_equal = (data_rs_fwd == data_rt_fwd);
 	end
@@ -331,7 +366,7 @@ module datapath (
 			alu_out_mem <= alu_out_exe;
 			mem_ren_mem <= mem_ren_exe;
 			mem_wen_mem <= mem_wen_exe;
-			wb_data_src_mem = wb_data_src_exe;
+			wb_data_src_mem <= wb_data_src_exe;
 			wb_wen_mem <= wb_wen_exe;
             is_load_mem <= is_load_exe;
             is_store_mem <= is_store_exe;
