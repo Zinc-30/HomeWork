@@ -59,7 +59,7 @@ assign ir = ir_en & ir_wait & ir_valid;
 always @(negedge clk) begin
     data_r <= regfile[addr_r];
 end
-    
+
 // CP0 operations(write at exe stage)
 always @(posedge clk) begin
     if (rst) begin
@@ -70,7 +70,6 @@ always @(posedge clk) begin
 	else if (ir) begin
         jump_en <= 1;
         jump_addr <= regfile[CP0_EHBR];
-        regfile[CP0_EPCR] <= ret_addr;
     end
     else if (ir_en) begin
         case (oper) 
@@ -88,6 +87,15 @@ always @(posedge clk) begin
                 eret <= 1;
             end
         endcase
+    end
+end
+
+always @(posedge clk) begin
+    if (jump_en && eret) begin
+        regfile[CP0_EPCR] <= 0;
+    end
+    else if (jump_en) begin
+        regfile[CP0_EPCR] <= ret_addr;
     end
 end
 

@@ -227,7 +227,7 @@ module datapath (
 		endcase
 	end
 
-    assign return_addr = (pc_src_ctrl == 0) ? inst_addr_id : inst_addr;
+    assign return_addr = (pc_src_ctrl == 0) ? inst_addr : inst_addr_id;
 	
 	regfile REGFILE (
 		.clk(clk),
