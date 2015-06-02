@@ -77,8 +77,11 @@ module datapath (
 	output reg wb_valid,
     // CP0 control signal
     output wire epc_ctrl,
+    input wire ir_en,
+    input wire ir_rst,
     input wire [1:0] cp_oper,
-    input wire interrupt
+    input wire interrupt,
+    output wire ir
 	);
 	
 	`include "mips_define.vh"
@@ -256,12 +259,13 @@ module datapath (
         .data_r(cpr_cs),
         .addr_w(inst_data_ctrl[15:11]),
         .data_w(data_rt_fwd),
-        .rst(rst),
-        .ir_en(1'b1),
+        .rst(ir_rst),
+        .ir_en(ir_en),
         .ir_in(interrupt),
         .ret_addr(return_addr),
         .jump_en(epc_ctrl),
-        .jump_addr(epc)
+        .jump_addr(epc),
+        .ir(ir)
     );
 
 

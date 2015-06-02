@@ -20,6 +20,7 @@ module mips_top (
 	wire btn_reset, btn_step;
 	wire disp_prev, disp_next;
     wire interrupt;
+    wire ir;
 	`ifndef SIMULATING
 	anti_jitter #(.CLK_FREQ(50), .JITTER_MAX(10000), .INIT_VALUE(0))
 		AJ_SW0 (.clk(CCLK), .rst(1'b0), .sig_i(SW[0]), .sig_o(switch[0]));
@@ -128,7 +129,7 @@ module mips_top (
 		.lcd_dat(LCDDAT)
 		);
 	
-	assign LED = {3'b0, interrupt, switch};
+	assign LED = {2'b0, ir, interrupt, switch};
 	
 	// instruction signals
 	wire inst_ren;
@@ -160,7 +161,8 @@ module mips_top (
 		.mem_addr(mem_addr),
 		.mem_dout(mem_data_w),
 		.mem_din(mem_data_r),
-        .interrupt(interrupt)
+        .interrupt(interrupt),
+        .ir(ir)
 		);
 	
 	// IF YOU ARE NOT SURE ABOUT INITIALIZING MEMORY USING 'READMEMH', PLEASE REPLACE BELOW MODULE TO IP CORE

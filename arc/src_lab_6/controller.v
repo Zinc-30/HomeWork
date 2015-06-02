@@ -71,6 +71,8 @@ module controller (/*AUTOARG*/
 	input wire wb_valid,
     // CP0 control signal
     input wire jump_en,
+    output reg ir_en,
+    output reg ir_rst,
     output reg [1:0] cp_oper
 	);
 
@@ -448,12 +450,15 @@ module controller (/*AUTOARG*/
 		mem_en = 1;
 		wb_rst = 0;
 		wb_en = 1;
+		ir_en = 1;
+		ir_rst = 0;
 		if (rst) begin
 			if_rst = 1;
 			id_rst = 1;
 			exe_rst = 1;
 			mem_rst = 1;
 			wb_rst = 1;
+			ir_rst = 1;
 		end
 		`ifdef DEBUG
 		// suspend and step execution
@@ -463,6 +468,7 @@ module controller (/*AUTOARG*/
 			exe_en = 0;
 			mem_en = 0;
 			wb_en = 0;
+			ir_en = 0;
 		end
 		`endif
 		// this stall indicate that ID is waiting for previous LW instruction, insert one NOP between ID and EXE.

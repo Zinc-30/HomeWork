@@ -27,7 +27,8 @@ module mips_core (
 	output wire [31:0] mem_dout,  // data writing to memory
 	input wire [31:0] mem_din,  // data read from memory
     // interrupt signal
-    input wire interrupt
+    input wire interrupt,
+    output wire ir
 	);
 	
 	// control signals
@@ -60,7 +61,7 @@ module mips_core (
     wire [4:0] addr_rt_mem, regw_addr_exe, regw_addr_mem, regw_addr_wb;
 
     wire [1:0] cp_oper;
-    wire jump_en;
+    wire jump_en,ir_en;
 
 	
 	// controller
@@ -125,6 +126,8 @@ module mips_core (
 		.wb_valid(wb_valid),
 
         .jump_en(jump_en),
+        .ir_en(ir_en),
+        .ir_rst(ir_rst),
         .cp_oper(cp_oper)
 	);
 	
@@ -197,7 +200,10 @@ module mips_core (
         // CP0 control signal
         .epc_ctrl(jump_en),
         .cp_oper(cp_oper),
-        .interrupt(interrupt)
+        .interrupt(interrupt),
+        .ir_en(ir_en),
+        .ir_rst(ir_rst),
+        .ir(ir)
 	);
 	
 endmodule
