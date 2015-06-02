@@ -75,7 +75,8 @@ module mips_top (
 	
 	// display
 	reg [4:0] disp_addr0, disp_addr1, disp_addr2, disp_addr3;
-	wire [31:0] disp_data;
+	wire [31:0] disp_data_gpr, disp_data;
+	wire [31:0] disp_data_cp0;
 	
 	reg disp_prev_buf, disp_next_buf;
 	always @(posedge clk_cpu) begin
@@ -113,6 +114,8 @@ module mips_top (
 			3: disp_addr = disp_addr3;
 		endcase
 	end
+
+	assign disp_data = switch[2] ? disp_data_gpr : disp_data_cp0;
 	
 	display DISPLAY (
 		.clk(clk_disp),
@@ -125,7 +128,7 @@ module mips_top (
 		.lcd_dat(LCDDAT)
 		);
 	
-	assign LED = {4'b0, switch};
+	assign LED = {3'b0, interrupt, switch};
 	
 	// instruction signals
 	wire inst_ren;
@@ -146,7 +149,8 @@ module mips_top (
 		.debug_en(switch[3]),
 		.debug_step(btn_step),
 		.debug_addr({switch[0], disp_addr[4:0]}),
-		.debug_data(disp_data),
+		.debug_data(disp_data_gpr),
+		.debug_data_cp0(disp_data_cp0),
 		`endif
 		.inst_ren(inst_ren),
 		.inst_addr(inst_addr),

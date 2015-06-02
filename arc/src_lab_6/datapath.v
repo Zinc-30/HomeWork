@@ -11,6 +11,7 @@ module datapath (
 	`ifdef DEBUG
 	input wire [5:0] debug_addr,  // debug address
 	output wire [31:0] debug_data,  // debug data
+	output wire [31:0] debug_data_cp0,
 	`endif
 	// control signals
 	output reg [31:0] inst_data_ctrl,  // instruction
@@ -97,8 +98,7 @@ module datapath (
 	reg [31:0] inst_addr_next_id;
 	reg [4:0] regw_addr_id;
 	wire [4:0] addr_rs, addr_rt;
-	wire [31:0] data_rs, data_rt, data_imm;
-	reg AFromEXLW,BFromEXLW;	
+	wire [31:0] data_rs, data_rt, data_imm;	
 	
 	// EXE signals
 	reg [31:0] inst_addr_exe;
@@ -247,9 +247,9 @@ module datapath (
 	// CP0
     cp0 CP0(
         .clk(clk),
-        `ifdef debug
-        .debug_addr(), 
-        .debug_data(),
+        `ifdef DEBUG
+        .debug_addr(debug_addr[4:0]), 
+        .debug_data(debug_data_cp0),
         `endif
         .oper(cp_oper),
         .addr_r(inst_data_ctrl[15:11]),

@@ -14,6 +14,7 @@ module mips_core (
 	input wire debug_step,  // debug step clock
 	input wire [5:0] debug_addr,  // debug address
 	output wire [31:0] debug_data,  // debug data
+	output wire [31:0] debug_data_cp0,
 	`endif
 	// instruction interfaces
 	output wire inst_ren,  // instruction read enable signal
@@ -133,6 +134,7 @@ module mips_core (
 		`ifdef DEBUG
 		.debug_addr(debug_addr),
 		.debug_data(debug_data),
+		.debug_data_cp0(debug_data_cp0),
 		`endif
 		.inst_data_ctrl(inst_data_ctrl),
         .rs_rt_equal(rs_rt_equal),

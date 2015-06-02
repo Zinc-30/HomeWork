@@ -79,7 +79,9 @@ always @(posedge clk) begin
             end
             EXE_CP_STORE: begin
                 eret <= 0;
-                regfile[addr_w] <= data_w;
+                if (addr_w != CP0_EPCR) begin
+                    regfile[addr_w] <= data_w;
+                end
             end
             EXE_CP0_ERET: begin
                 jump_en <= 1;
@@ -88,9 +90,6 @@ always @(posedge clk) begin
             end
         endcase
     end
-end
-
-always @(posedge clk) begin
     if (jump_en && eret) begin
         regfile[CP0_EPCR] <= 0;
     end
@@ -98,6 +97,7 @@ always @(posedge clk) begin
         regfile[CP0_EPCR] <= ret_addr;
     end
 end
+
 
 // debug
 `ifdef DEBUG

@@ -58,6 +58,8 @@ module sim_mips_top;
         #50 BTNW = 0;
         #550 BTNW = 1;
         #50 BTNW = 0;
+		#500 BTNW = 1;
+		#50 BTNW = 0;
 
 	end
 	
