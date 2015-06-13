@@ -20,12 +20,14 @@ module mips_core (
 	output wire inst_ren,  // instruction read enable signal
 	output wire [31:0] inst_addr,  // address of instruction needed
 	input wire [31:0] inst_data,  // instruction fetched
+    input wire inst_stall, // instruction read stall
 	// memory interfaces
 	output wire mem_ren,  // memory read enable signal
 	output wire mem_wen,  // memory write enable signal
 	output wire [31:0] mem_addr,  // address of memory
 	output wire [31:0] mem_dout,  // data writing to memory
 	input wire [31:0] mem_din,  // data read from memory
+    input wire mem_stall, // data read/write stall
     // interrupt signal
     input wire interrupt,
     output wire ir
@@ -74,6 +76,8 @@ module mips_core (
 		`endif
         // instruction decode
 		.inst(inst_data_ctrl),
+        .inst_stall(inst_stall),
+        .mem_stall(mem_stall),
         .rs_rt_equal(rs_rt_equal),
         .is_load_exe(is_load_exe),
         .is_store_exe(is_store_exe),

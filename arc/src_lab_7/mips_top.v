@@ -135,12 +135,14 @@ module mips_top (
 	wire inst_ren;
 	wire [31:0] inst_addr;
 	wire [31:0] inst_data;
+    wire inst_stall;
 	
 	// memory signals
 	wire mem_ren, mem_wen;
 	wire [31:0] mem_addr;
 	wire [31:0] mem_data_r;
 	wire [31:0] mem_data_w;
+    wire mem_stall;
 	
 	// mips core
 	mips_core MIPS_CORE (
@@ -156,32 +158,47 @@ module mips_top (
 		.inst_ren(inst_ren),
 		.inst_addr(inst_addr),
 		.inst_data(inst_data),
+        .inst_stall(inst_stall),
 		.mem_ren(mem_ren),
 		.mem_wen(mem_wen),
 		.mem_addr(mem_addr),
 		.mem_dout(mem_data_w),
 		.mem_din(mem_data_r),
+        .mem_stall(mem_stall),
         .interrupt(interrupt),
         .ir(ir)
 		);
 	
 	// IF YOU ARE NOT SURE ABOUT INITIALIZING MEMORY USING 'READMEMH', PLEASE REPLACE BELOW MODULE TO IP CORE
-	inst_rom INST_ROM (
+	inst_rom #(
+        .ADDR_WIDTH(6),
+        .CLK_DELAY(8)
+        ) INST_ROM (
 		.clk(clk_cpu),
+        .rst(rst_all),
 		.addr({2'b0, inst_addr[31:2]}),
 		//.addr(inst_addr),
-		.inst(inst_data)
+        .ren(inst_ren),
+		.inst(inst_data),
+        .stall(inst_stall),
+        .ack()
 		);
 
 	// IF YOU ARE NOT SURE ABOUT INITIALIZING MEMORY USING 'READMEMH', PLEASE REPLACE BELOW MODULE TO IP CORE
-	data_ram DATA_RAM (
+	data_ram #(
+        .ADDR_WIDTH(5),
+        .CLK_DELAY(8)
+        ) DATA_RAM (
 		.clk(clk_cpu),
+        .rst(rst_all),
 		.addr({2'b0, mem_addr[31:2]}),
 		//.addr(mem_addr),
-		.we(mem_wen),
-		.re(mem_ren),
+        .ren(mem_ren),
+        .wen(mem_wen),
 		.din(mem_data_w),
-		.dout(mem_data_r)
+		.dout(mem_data_r),
+        .stall(mem_stall),
+        .ack()
 		);
 	
 endmodule

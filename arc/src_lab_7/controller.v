@@ -15,6 +15,8 @@ module controller (/*AUTOARG*/
 	`endif
 	// instruction decode
 	input wire [31:0] inst,  // instruction
+    input wire inst_stall,
+    input wire mem_stall,
 	input wire rs_rt_equal,//whether data from rs and rt are equal
 	input wire is_load_exe,//whether instruction in EXE is lw
 	inout wire is_store_exe,//whether instruction in EXE is sw
@@ -472,7 +474,7 @@ module controller (/*AUTOARG*/
 		end
 		`endif
 		// this stall indicate that ID is waiting for previous LW instruction, insert one NOP between ID and EXE.
-		else if (reg_stall) begin
+		else if (reg_stall || mem_stall || inst_stall) begin
 			if_en = 0;
 			id_en = 0;
 			exe_rst = 1;

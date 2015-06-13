@@ -77,6 +77,7 @@ always @(posedge clk) begin
         jump_en <= 0;
         jump_addr <= 0;
         eret <= 0;
+        regfile[CP0_TCR] <= 0;
     end
 	else if (ir) begin
         jump_en <= 1;
@@ -90,7 +91,7 @@ always @(posedge clk) begin
             end
             EXE_CP_STORE: begin
                 eret <= 0;
-                if (addr_w != CP0_EPCR) begin
+                if (addr_w != CP0_EPCR && addr_w != CP0_TCR) begin
                     regfile[addr_w] <= data_w;
                 end
             end
@@ -100,6 +101,7 @@ always @(posedge clk) begin
                 eret <= 1;
             end
         endcase
+        regfile[CP0_TCR] <= regfile[CP0_TCR] + 1;
     end
     if (jump_en && eret) begin
         regfile[CP0_EPCR] <= 0;
