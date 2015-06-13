@@ -54,13 +54,6 @@ module sim_mips_top;
 
 		// Wait 100 ns for global reset to finish
 		// Add stimulus here
-        #1565 BTNW = 1;
-        #50 BTNW = 0;
-        #550 BTNW = 1;
-        #50 BTNW = 0;
-		#500 BTNW = 1;
-		#50 BTNW = 0;
-
 	end
 	
 	initial forever #5 CCLK = ~CCLK;

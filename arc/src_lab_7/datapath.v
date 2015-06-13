@@ -175,16 +175,24 @@ module datapath (
 	// IF stage
 	assign
 		inst_addr_next = inst_addr + 4;
+
+    always @(*) begin
+        if (if_rst) begin
+            inst_ren = 0;
+        end
+        else if (if_en) begin
+            inst_ren = 1;
+        end
+    end
+
 	
 	always @(posedge clk) begin
 		if (if_rst) begin
 			if_valid <= 0;
-			inst_ren <= 0;
 			inst_addr <= 0;
 		end
 		else if (if_en) begin
 			if_valid <= 1;
-			inst_ren <= 1;
             if (epc_ctrl == 1) begin
                 inst_addr <= epc;
             end

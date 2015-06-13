@@ -32,6 +32,7 @@ initial begin
     ir_wait = 0;
     ir_valid = 1;
     eret = 0;
+    regfile[CP0_TCR] = 0;
 end
 reg [31:0] regfile [0:31];
 
@@ -73,11 +74,11 @@ end
 
 // CP0 operations(write at exe stage)
 always @(posedge clk) begin
+    regfile[CP0_TCR] <= regfile[CP0_TCR] + 1;
     if (rst) begin
         jump_en <= 0;
         jump_addr <= 0;
         eret <= 0;
-        regfile[CP0_TCR] <= 0;
     end
 	else if (ir) begin
         jump_en <= 1;
@@ -101,7 +102,6 @@ always @(posedge clk) begin
                 eret <= 1;
             end
         endcase
-        regfile[CP0_TCR] <= regfile[CP0_TCR] + 1;
     end
     if (jump_en && eret) begin
         regfile[CP0_EPCR] <= 0;
