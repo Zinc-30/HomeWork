@@ -9,7 +9,7 @@ module cmu (
 	output wire [31:0] data_r,
 	output wire stall,
 	//mem intface
-	output wire mem_cs_o,
+	output wire mem_cs_o,//?
 	output wire mem_we_o,
 	output wire [31:0] mem_addr_o,
 	output wire [31:0] mem_data_o,
@@ -75,40 +75,41 @@ always @(posedge clk) begin
 			word_count <= next_word_count;
 		end 
 	end
-//Output (1)
+//cpu intface
 case (next_state)
-S_IDLE: begin
-	cache_addr = addr_rw;
-	cache_edit = en_w;
-	cache_din = data_w;
-	end
-S_BACK, S_BACK_WAIT: begin
-	cache_addr = {addr_rw[31:LINE_WORDS_WIDTH+2], next_word_count,2'b00};
-	end
-S_FILL, S_FILL_WAIT: begin
-	cache_addr = {addr_rw[31:LINE_WORDS_WIDTH+2], word_count_buf,2'b00};
-	cache_din = mem_data_syn;
-	cache_store = mem_ack_syn;
-	end
+	S_IDLE: begin
+		cache_addr = addr_rw;
+		cache_edit = en_w;
+		cache_din = data_w;
+		end
+	S_BACK, S_BACK_WAIT: begin
+		cache_addr = {addr_rw[31:LINE_WORDS_WIDTH+2], next_word_count,2'b00};
+		end
+	S_FILL, S_FILL_WAIT: begin
+		cache_addr = {addr_rw[31:LINE_WORDS_WIDTH+2], word_count_buf,2'b00};
+		cache_din = mem_data_syn;
+		cache_store = mem_ack_syn;
+		end
 endcase
-//Output (2)
+//mem intface
 case (next_state)
-S_IDLE, S_BACK_WAIT, S_FILL_WAIT: begin
-	mem_cs_o <= 0;
-	mem_we_o <= 0;
-	mem_addr_o <= 0;
-	end
-S_BACK: begin
-	mem_cs_o <= 1;
-	mem_we_o <= 1;
-	mem_addr_o <= {cache_tag, addr_rw[31-TAG_BITS:LINE_WORDS_WIDTH+2], next_word_count, 2'b00};
-	end
-S_FILL: begin
-	mem_cs_o <= 1;
-	mem_we_o <= 0;
-	mem_addr_o <= {addr_rw[31:LINE_WORDS_WIDTH+2], 
-	next_word_count, 2'b00};
-	end
+	S_IDLE, S_BACK_WAIT, S_FILL_WAIT: begin
+		mem_cs_o <= 0;
+		mem_we_o <= 0;
+		mem_addr_o <= 0;
+		end
+	S_BACK: begin
+		mem_cs_o <= 1;
+		mem_we_o <= 1;
+		mem_addr_o <= {cache_tag, addr_rw[31-TAG_BITS:LINE_WORDS_WIDTH+2], next_word_count, 2'b00};
+		mem_data_o <=;
+		end
+	S_FILL: begin
+		mem_cs_o <= 1;
+		mem_we_o <= 0;
+		mem_addr_o <= {addr_rw[31:LINE_WORDS_WIDTH+2],next_word_count, 2'b00};
+
+		end
 endcase
 
 //cache
