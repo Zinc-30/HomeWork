@@ -48,10 +48,9 @@ always @(*) begin
         inner_dirty[addr[ADDRESS_BITS - TAG_BITS - 1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]] <= 0;
         inner_tag[addr[ADDRESS_BITS - TAG_BITS - 1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]] <= addr[ADDRESS_BITS - 1 : ADDRESS_BITS - TAG_BITS];
     end
-    else if (hit && edit) begin
+    else if (edit) begin
         inner_dirty[addr[ADDRESS_BITS - TAG_BITS - 1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]] <= 1;
-        // todo
-        //inner_tag[addr[ADDRESS_BITS - TAG_BITS -1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]] <= ?;
+        inner_tag[addr[ADDRESS_BITS - TAG_BITS - 1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]] <= addr[ADDRESS_BITS - 1 : ADDRESS_BITS - TAG_BITS];
     end
 end
 
