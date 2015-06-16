@@ -28,13 +28,15 @@ module cp0 (
 //wire ir;
 reg ir_wait, ir_valid;
 reg eret;
+reg [31:0] regfile [0:31];
+
 initial begin
     ir_wait = 0;
     ir_valid = 1;
     eret = 0;
     regfile[CP0_TCR] = 0;
 end
-reg [31:0] regfile [0:31];
+
 
 always @(posedge clk) begin
     if (rst) begin
