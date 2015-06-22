@@ -165,11 +165,28 @@ module mips_top (
 		.mem_dout(mem_data_w),
 		.mem_din(mem_data_r),
         .mem_stall(mem_stall),
-        .interrupt(interrupt),
-        .ir(ir)
+        .interrupt(interrupt)
 		);
 	
 	// IF YOU ARE NOT SURE ABOUT INITIALIZING MEMORY USING 'READMEMH', PLEASE REPLACE BELOW MODULE TO IP CORE
+    wire [31:0] inst_mem_addr, inst_mem_dout, inst_mem_din;
+    wire inst_mem_cs, inst_mem_we, inst_mem_ack;
+    cmu INST_CMU (
+        .clk(clk_cpu),
+        .rst(rst_all),
+        .addr_rw(inst_addr),
+        .en_r(inst_ren),
+        .data_r(inst_data),
+        .en_w(1'b0),
+        .data_w(0),
+        .stall(inst_stall),
+        .mem_cs_o(inst_mem_cs),
+        .mem_we_o(inst_mem_we),
+        .mem_addr_o(inst_mem_addr),
+        .mem_data_i(inst_mem_dout),
+        .mem_data_o(inst_mem_din),
+        .mem_ack_i(inst_mem_ack)
+    );
 	inst_rom #(
         .ADDR_WIDTH(6),
         .CLK_DELAY(8)
@@ -178,13 +195,31 @@ module mips_top (
         .rst(rst_all),
 		.addr({2'b0, inst_addr[31:2]}),
 		//.addr(inst_addr),
-        .ren(inst_ren),
-		.inst(inst_data),
-        .stall(inst_stall),
-        .ack()
+        .ren(inst_mem_cs & ~inst_mem_we),
+		.inst(inst_mem_dout),
+        .stall(),
+        .ack(inst_mem_ack)
 		);
 
 	// IF YOU ARE NOT SURE ABOUT INITIALIZING MEMORY USING 'READMEMH', PLEASE REPLACE BELOW MODULE TO IP CORE
+    wire [31:0] data_mem_addr, data_mem_dout, data_mem_din;
+    wire data_mem_cs, data_mem_we, data_mem_ack;
+    cmu DATA_CMU (
+        .clk(clk_cpu),
+        .rst(rst_all),
+        .addr_rw(mem_addr),
+        .en_r(mem_ren),
+        .data_r(mem_data_r),
+        .en_w(mem_wen),
+        .data_w(mem_data_w),
+        .stall(mem_stall),
+        .mem_cs_o(data_mem_cs),
+        .mem_we_o(data_mem_we),
+        .mem_addr_o(data_mem_addr),
+        .mem_data_i(data_mem_dout),
+        .mem_data_o(data_mem_din),
+        .mem_ack_i(data_mem_ack)
+    );
 	data_ram #(
         .ADDR_WIDTH(5),
         .CLK_DELAY(8)
@@ -193,12 +228,12 @@ module mips_top (
         .rst(rst_all),
 		.addr({2'b0, mem_addr[31:2]}),
 		//.addr(mem_addr),
-        .ren(mem_ren),
-        .wen(mem_wen),
-		.din(mem_data_w),
-		.dout(mem_data_r),
-        .stall(mem_stall),
-        .ack()
+        .ren(data_mem_cs & ~data_mem_we),
+        .wen(data_mem_cs & data_mem_we),
+		.din(data_mem_din),
+		.dout(data_mem_dout),
+        .stall(),
+        .ack(data_mem_ack)
 		);
 	
 endmodule

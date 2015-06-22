@@ -29,8 +29,7 @@ module mips_core (
 	input wire [31:0] mem_din,  // data read from memory
     input wire mem_stall, // data read/write stall
     // interrupt signal
-    input wire interrupt,
-    output wire ir
+    input wire interrupt
 	);
 	
 	// control signals
@@ -206,8 +205,7 @@ module mips_core (
         .cp_oper(cp_oper),
         .interrupt(interrupt),
         .ir_en(ir_en),
-        .ir_rst(ir_rst),
-        .ir(ir)
+        .ir_rst(ir_rst)
 	);
 	
 endmodule

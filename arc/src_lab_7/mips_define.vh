@@ -192,3 +192,16 @@ localparam
 	GPR_SP = 29,
 	GPR_FP = 30,
 	GPR_RA = 31;
+
+// cache constant
+localparam
+    LINE_WORDS = 4,
+    LINE_WORDS_WIDTH = 2,
+    WORD_BITS = 32,
+    TAG_BITS = 22,
+    ADDRESS_BITS = 32,
+    LINE_INDEX_WIDTH = 6,
+    LINE_NUMBER = 64,
+    WORD_BYTES_WIDTH = 2;
+
+

@@ -13,15 +13,7 @@ module cacheline(
     output reg [31:0] dout
 );
 
-localparam
-    LINE_WORDS = 4,
-    LINE_WORDS_WIDTH = 2,
-    WORD_BITS = 32,
-    TAG_BITS = 22,
-    ADDRESS_BITS = 32,
-    LINE_INDEX_WIDTH = 6,
-    LINE_NUMBER = 64,
-    WORD_BYTES_WIDTH = 2;
+`include "mips_define.vh"
 
 reg [LINE_NUMBER - 1 : 0] inner_valid = 0;
 reg [LINE_NUMBER - 1 : 0] inner_dirty = 0;
@@ -57,6 +49,29 @@ end
 always @(*) begin
     valid <= inner_valid[addr[ADDRESS_BITS - TAG_BITS - 1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]];
     dirty <= inner_dirty[addr[ADDRESS_BITS - TAG_BITS - 1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]];
+end
+
+// always @(*)
+// this issue is fixed on spartan6
+// to avoid "always block sensitivity list" error
+always @(
+    inner_tag[0], inner_tag[1], inner_tag[2], inner_tag[3], 
+    inner_tag[4], inner_tag[5], inner_tag[6], inner_tag[7],
+    inner_tag[8], inner_tag[9], inner_tag[10], inner_tag[11], 
+    inner_tag[12], inner_tag[13], inner_tag[14], inner_tag[15],
+    inner_tag[16], inner_tag[17], inner_tag[18], inner_tag[19], 
+    inner_tag[20], inner_tag[21], inner_tag[22], inner_tag[23],
+    inner_tag[24], inner_tag[25], inner_tag[26], inner_tag[27], 
+    inner_tag[28], inner_tag[29], inner_tag[30], inner_tag[31],
+    inner_tag[32], inner_tag[33], inner_tag[34], inner_tag[35], 
+    inner_tag[36], inner_tag[37], inner_tag[38], inner_tag[39],
+    inner_tag[40], inner_tag[41], inner_tag[42], inner_tag[43], 
+    inner_tag[44], inner_tag[45], inner_tag[46], inner_tag[47],
+    inner_tag[48], inner_tag[49], inner_tag[50], inner_tag[51], 
+    inner_tag[52], inner_tag[53], inner_tag[54], inner_tag[55],
+    inner_tag[56], inner_tag[57], inner_tag[58], inner_tag[59], 
+    inner_tag[60], inner_tag[61], inner_tag[62], inner_tag[63]
+) begin
     tag <= inner_tag[addr[ADDRESS_BITS - TAG_BITS - 1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]];
 end
 
