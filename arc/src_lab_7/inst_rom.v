@@ -16,6 +16,7 @@ module inst_rom (
     reg [CLK_DELAY-1:0] ren_buf = 0;
     reg [CLK_DELAY-1:0] ren_buf_next;
     reg [31:0] addr_buf;
+    reg [1:0] offset;
 	
 	initial	begin
 		$readmemh("inst_mem.hex", inst_mem);
@@ -46,10 +47,19 @@ module inst_rom (
         inst <= 0;
         ack <= 0;
         if (addr_buf[31:ADDR_WIDTH] == 0 && ren_buf_next[0]) begin
-			inst <= inst_mem[addr_buf[ADDR_WIDTH-1:0]];
+			inst <= inst_mem[addr_buf[ADDR_WIDTH-1:0] + offset];
             ack <= 1;
         end
 	end
+
+    always @(posedge clk) begin
+        if (rst || !ack) begin
+            offset = 0;
+        end
+        else if (ack) begin
+            offset = offset + 1;
+        end
+    end
 
     always @(*) begin
         stall = ren & (~ack);

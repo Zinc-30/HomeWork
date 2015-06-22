@@ -26,6 +26,10 @@ localparam
     S_FILL = 3,
     S_FILL_WAIT = 4;
 
+initial begin
+    cache_addr = 0;
+end
+
 reg [2:0] state,next_state;
 reg [1:0] word_count, next_word_count;
 
@@ -107,6 +111,7 @@ always @(posedge clk) begin
             cache_addr = addr_rw;
             cache_edit = en_w;
             cache_din = data_w;
+            cache_store = 0;
             if (cache_hit) begin
                 data_r = cache_dout;
             end
@@ -158,6 +163,6 @@ cacheline CACHELINE(
     .dout(cache_dout)
 );
 
-assign stall = (en_r | en_w) & !(state == S_IDLE);
+assign stall = (en_r | en_w) & !(cache_hit && state == S_IDLE);
 
 endmodule

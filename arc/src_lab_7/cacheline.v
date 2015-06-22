@@ -20,6 +20,12 @@ reg [LINE_NUMBER - 1 : 0] inner_dirty = 0;
 reg [TAG_BITS - 1 : 0] inner_tag[0 : LINE_NUMBER - 1];
 reg [WORD_BITS - 1 : 0] inner_data[0 : LINE_NUMBER * LINE_WORDS - 1];
 
+initial begin
+    tag = 0;
+    inner_valid = 0;
+    inner_dirty = 0;
+end
+
 always @(posedge clk) begin
     dout <= inner_data[addr[ADDRESS_BITS - TAG_BITS - 1 : WORD_BYTES_WIDTH]];
 end

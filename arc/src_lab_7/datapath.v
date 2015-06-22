@@ -201,7 +201,7 @@ module datapath (
                     PC_NEXT: inst_addr <= inst_addr_next;
                     PC_JUMP: inst_addr <= {inst_addr_id[31:28],inst_data_ctrl[25:0], 2'b0};
                     PC_BRANCH: inst_addr <= inst_addr_next_id + {data_imm[29:0] , 2'b0};
-                    PC_JR:inst_addr <= data_rs_fwd;
+                    PC_JR: inst_addr <= data_rs_fwd;
                 endcase
             end
 		end
