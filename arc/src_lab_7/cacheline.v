@@ -26,7 +26,7 @@ initial begin
     inner_dirty = 0;
 end
 
-always @(posedge clk) begin
+always @(negedge clk) begin
     dout <= inner_data[addr[ADDRESS_BITS - TAG_BITS - 1 : WORD_BYTES_WIDTH]];
 end
 

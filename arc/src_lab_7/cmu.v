@@ -43,8 +43,6 @@ reg [31:0] mem_data_syn;
 reg mem_ack_syn;
 
 always @(posedge clk) begin
-    mem_data_syn = mem_data_i;
-    mem_ack_syn = mem_ack_i;
     case(state) 
         S_IDLE: begin
             if (en_r || en_w) begin
@@ -104,8 +102,10 @@ always @(posedge clk) begin
     end 
 end
 
-always @(posedge clk) begin
+always @(*) begin
     //cpu intface
+    mem_data_syn = mem_data_i;
+    mem_ack_syn = mem_ack_i;
     case (next_state)
         S_IDLE: begin
             cache_addr = addr_rw;
@@ -121,7 +121,8 @@ always @(posedge clk) begin
         end
         S_FILL, S_FILL_WAIT: begin
             cache_addr = {addr_rw[31:LINE_WORDS_WIDTH+2], word_count,2'b00};
-            cache_din = mem_data_syn;
+            //cache_din = mem_data_syn;
+            cache_din = mem_data_i;
             cache_store = mem_ack_syn;
         end
     endcase
