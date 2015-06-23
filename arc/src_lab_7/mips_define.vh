@@ -201,7 +201,11 @@ localparam
     TAG_BITS = 22,
     ADDRESS_BITS = 32,
     LINE_INDEX_WIDTH = 6,
-    LINE_NUMBER = 64,
+    LINE_NUMBER = 32,
     WORD_BYTES_WIDTH = 2;
+
+localparam
+    ADDR_WIDTH = 5,
+    CLK_DELAY = 9;
 
 

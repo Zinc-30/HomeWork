@@ -193,7 +193,7 @@ module mips_top (
         ) INST_ROM (
 		.clk(clk_cpu),
         .rst(rst_all),
-		.addr({2'b0, inst_addr[31:2]}),
+		.addr({2'b0, inst_mem_addr[31:2]}),
 		//.addr(inst_addr),
         .ren(inst_mem_cs & ~inst_mem_we),
 		.inst(inst_mem_dout),

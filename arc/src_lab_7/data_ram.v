@@ -11,7 +11,7 @@ module data_ram (
 	);
 	
 	parameter
-		ADDR_WIDTH = 5,
+		ADDR_WIDTH = 1,
 		CLK_DELAY = 8;
 	
 	reg [31:0] data_mem [0:(1<<ADDR_WIDTH)-1];

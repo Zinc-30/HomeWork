@@ -26,9 +26,7 @@ localparam
     S_FILL = 3,
     S_FILL_WAIT = 4;
 
-initial begin
-    cache_addr = 0;
-end
+
 
 reg [2:0] state,next_state;
 reg [1:0] word_count, next_word_count;
@@ -42,7 +40,30 @@ wire [21:0] cache_tag;
 reg [31:0] mem_data_syn;
 reg mem_ack_syn;
 
+initial begin
+    cache_addr = 0;
+    next_state = 0;
+end
+
+//Perform State Assignment
 always @(posedge clk) begin
+    if (rst) begin
+        state <= 0;
+        word_count <= 0;
+    end
+    else begin
+        state <= next_state;
+        word_count <= next_word_count;
+        
+    end  
+end
+
+always @(posedge clk) begin
+    mem_data_syn <= mem_data_i;
+    mem_ack_syn <= mem_ack_i;
+end
+
+always @(negedge clk) begin
     case(state) 
         S_IDLE: begin
             if (en_r || en_w) begin
@@ -74,8 +95,9 @@ always @(posedge clk) begin
             next_state = S_FILL;
         end
         S_FILL: begin
-            if (mem_ack_i)
+            if (mem_ack_i) begin
                 next_word_count = word_count + 1'h1;
+            end
             else
                 next_word_count = word_count;
             if (mem_ack_i && word_count == {LINE_WORDS_WIDTH{1'b1}})
@@ -88,24 +110,7 @@ always @(posedge clk) begin
             next_state = S_IDLE;
         end
     endcase
-end
-
-//Perform State Assignment
-always @(posedge clk) begin
-    if (rst) begin
-        state <= 0;
-        word_count <= 0;
-    end
-    else begin
-        state <= next_state;
-        word_count <= next_word_count;
-    end 
-end
-
-always @(*) begin
-    //cpu intface
-    mem_data_syn = mem_data_i;
-    mem_ack_syn = mem_ack_i;
+    
     case (next_state)
         S_IDLE: begin
             cache_addr = addr_rw;
@@ -123,7 +128,7 @@ always @(*) begin
             cache_addr = {addr_rw[31:LINE_WORDS_WIDTH+2], word_count,2'b00};
             //cache_din = mem_data_syn;
             cache_din = mem_data_i;
-            cache_store = mem_ack_syn;
+            cache_store = mem_ack_i;
         end
     endcase
     //mem intface
@@ -146,6 +151,15 @@ always @(*) begin
 
         end
     endcase
+    
+end
+
+
+
+always @(posedge clk) begin
+    //cpu intface
+    
+    
 end
 
 //cache

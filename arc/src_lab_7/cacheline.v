@@ -68,15 +68,15 @@ always @(
     inner_tag[16], inner_tag[17], inner_tag[18], inner_tag[19], 
     inner_tag[20], inner_tag[21], inner_tag[22], inner_tag[23],
     inner_tag[24], inner_tag[25], inner_tag[26], inner_tag[27], 
-    inner_tag[28], inner_tag[29], inner_tag[30], inner_tag[31],
-    inner_tag[32], inner_tag[33], inner_tag[34], inner_tag[35], 
-    inner_tag[36], inner_tag[37], inner_tag[38], inner_tag[39],
-    inner_tag[40], inner_tag[41], inner_tag[42], inner_tag[43], 
-    inner_tag[44], inner_tag[45], inner_tag[46], inner_tag[47],
-    inner_tag[48], inner_tag[49], inner_tag[50], inner_tag[51], 
-    inner_tag[52], inner_tag[53], inner_tag[54], inner_tag[55],
-    inner_tag[56], inner_tag[57], inner_tag[58], inner_tag[59], 
-    inner_tag[60], inner_tag[61], inner_tag[62], inner_tag[63]
+    inner_tag[28], inner_tag[29], inner_tag[30], inner_tag[31]
+//    inner_tag[32], inner_tag[33], inner_tag[34], inner_tag[35], 
+//    inner_tag[36], inner_tag[37], inner_tag[38], inner_tag[39],
+//    inner_tag[40], inner_tag[41], inner_tag[42], inner_tag[43], 
+//    inner_tag[44], inner_tag[45], inner_tag[46], inner_tag[47],
+//    inner_tag[48], inner_tag[49], inner_tag[50], inner_tag[51], 
+//    inner_tag[52], inner_tag[53], inner_tag[54], inner_tag[55],
+//    inner_tag[56], inner_tag[57], inner_tag[58], inner_tag[59], 
+//    inner_tag[60], inner_tag[61], inner_tag[62], inner_tag[63]
 ) begin
     tag <= inner_tag[addr[ADDRESS_BITS - TAG_BITS - 1 : LINE_WORDS_WIDTH + WORD_BYTES_WIDTH]];
 end
