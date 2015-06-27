@@ -293,7 +293,14 @@ module datapath (
             FWD_B_FROM_MEM: data_rt_fwd = alu_out_mem;
             FWD_B_FROM_DIN: data_rt_fwd = mem_din;
             FWD_B_FROM_WB: data_rt_fwd = regw_data_wb;
-            FWD_B_FROM_CP0: data_rt_fwd = cpr_cs;
+            FWD_B_FROM_CP0: begin 
+                if (addr_rt == 5) begin
+                    data_rt_fwd = cpr_cs + 2;
+                end
+                else begin
+                    data_rt_fwd = cpr_cs;
+                end
+            end
         endcase
         rs_rt_equal = (data_rs_fwd == data_rt_fwd);
 	end
