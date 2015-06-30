@@ -24,11 +24,10 @@ localparam
     S_BACK = 1,
     S_BACK_WAIT = 2,
     S_FILL = 3,
-    S_FILL_WAIT = 4;
+    S_FILL_WAIT = 4,
+	 S_FILL_EX = 5;
 
-initial begin
-    cache_addr = 0;
-end
+
 
 reg [2:0] state,next_state;
 reg [1:0] word_count, next_word_count;
@@ -41,6 +40,11 @@ wire [21:0] cache_tag;
 
 reg [31:0] mem_data_syn;
 reg mem_ack_syn;
+
+initial begin
+    cache_addr <= 0;
+	 state <= 0;
+end
 
 always @(posedge clk) begin
     case(state) 
@@ -85,8 +89,11 @@ always @(posedge clk) begin
         end
         S_FILL_WAIT: begin
             next_word_count = 0;
-            next_state = S_IDLE;
+            next_state = S_FILL_EX;
         end
+		  S_FILL_EX: begin
+				next_state = S_IDLE;
+		  end
     endcase
 end
 
@@ -116,10 +123,10 @@ always @(*) begin
                 data_r = cache_dout;
             end
         end
-        S_BACK, S_BACK_WAIT: begin
+        S_BACK, S_BACK_WAIT, S_FILL_EX: begin
             cache_addr = {addr_rw[31:LINE_WORDS_WIDTH+2], next_word_count,2'b00};
         end
-        S_FILL, S_FILL_WAIT: begin
+        S_FILL, S_FILL_WAIT, S_FILL_EX: begin
             cache_addr = {addr_rw[31:LINE_WORDS_WIDTH+2], word_count,2'b00};
             //cache_din = mem_data_syn;
             cache_din = mem_data_i;
@@ -128,7 +135,7 @@ always @(*) begin
     endcase
     //mem intface
     case (next_state)
-        S_IDLE, S_BACK_WAIT, S_FILL_WAIT: begin
+        S_IDLE, S_BACK_WAIT, S_FILL_WAIT, S_FILL_EX: begin
             mem_cs_o <= 0;
             mem_we_o <= 0;
             mem_addr_o <= 0;
